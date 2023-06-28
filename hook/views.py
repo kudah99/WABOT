@@ -65,6 +65,8 @@ def inbound(request):
             elif message_body == '5':
                 add_current_action_to_cache_DB(phoneNumber=user_number,value=FAQ_ACTION,expire_at=5)
                 return faq_handler(request=request)
+            elif message_body == '6':
+                return send_credits(phone_number=user_number)
         elif current_action == QUIZ_ACTION:
             if message_body  in ['1','true','false']:
                 return trivia_game(request=request)
@@ -182,4 +184,17 @@ def add_current_action_to_cache_DB(phoneNumber, value, expire_at: int):
 def invalid_reply():
     _msg = "Invalid response.\n\n To return home reply with *0*"
 
+    return send_response_messages(msg=_msg)
+
+#send credits
+def send_credits(phone_number):
+    getUser = cache.get(phone_number)
+    username = getUser.user_name
+    _msg =f"""
+    Hi {username}\n,
+    Meet the Ballot Buddies team @
+    https://ballotbuddies.net/
+    You  also welcome you to join us or if you have an suggestion you can reach us via our email hello@ballotbuddies.net
+    \n _reply with *0* to return main menu_
+    """
     return send_response_messages(msg=_msg)
