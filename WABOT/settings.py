@@ -7,15 +7,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Initialise environment variables
 env = environ.Env()
-environ.Env.read_env()
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-ok5!4zn5q=*+al%&qw+v2iv^^$#+cvjm#w(8@2%u%(5x7*qpq#'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = ['127.0.0.1','c225-196-41-88-241.ngrok-free.app','ballotbuddies.net']
 CSRF_TRUSTED_ORIGINS = ["https://ballotbuddies.net","https://www.ballotbuddies.net","https://www.0093-149-34-244-173.ngrok-free.app"]
@@ -84,15 +84,12 @@ WSGI_APPLICATION = 'WABOT.wsgi.application'
 
 DATABASES = {  
     'default': {  
-        'ENGINE': 'django.db.backends.mysql',  
+        'ENGINE': 'django.db.backends.postgresql_psycopg2', 
         'NAME': env('DATABASE_NAME'),
         'USER': env('DATABASE_USER'),
         'PASSWORD': env('DATABASE_PASS'),  
-        'HOST': '127.0.0.1',  
-        'PORT': '3306',  
-        'OPTIONS': {  
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"  
-        }  
+        'HOST': env('DATABASE_HOST'),  
+        'PORT': env('DATABASE_PORT')
     }  
 } 
 
