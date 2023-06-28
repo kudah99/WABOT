@@ -1,15 +1,15 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-import redis
 import random
 from twilio.twiml.messaging_response import MessagingResponse
 from .models import FAQ
+from django.core.cache import cache
 
-r = redis.StrictRedis(host='localhost', port=6379, db=0)
+
 
 def get_next_fqa(usernumber):
-    last_fqa = r.get(usernumber)
+    last_fqa = cache.get(usernumber)
     if last_fqa:
         last_fqa = int(last_fqa.decode('utf-8'))
     else:
@@ -18,10 +18,10 @@ def get_next_fqa(usernumber):
     remaining_fqa_list = set(fqa_list) - set(range(last_fqa + 1))
     if remaining_fqa_list:
         next_fqa_id = random.choice(list(remaining_fqa_list))
-        r.set(usernumber, next_fqa_id)
+        cache.set(usernumber, next_fqa_id)
         return FAQ.objects.get(id=next_fqa_id)
     else:
-        r.delete(usernumber)
+        cache.delete(usernumber)
         return None
 
 def faq_handler(request):
@@ -36,7 +36,7 @@ def faq_handler(request):
             return HttpResponse(str(response))
         else:
             response = MessagingResponse()
-            response.message("There are no more FAQs available. Please try again later.")
+            response.message("There are no more FAQs available.\n\n _To return to the main menu, reply with 0_")
             return HttpResponse(str(response))
     else:
         return HttpResponse("This is a webhook endpoint.")

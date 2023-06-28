@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from django.core.cache import cache
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-
+from faq.views import faq_handler
 from response_messages.models import ResponseMessages
 from main_menu.models import MainMenu
 from political_parties.models import Political_Parties
@@ -21,7 +21,7 @@ CURRENT_ACTION_PREFIX = "action"
 MAIN_MENU_ACTION = "main_menu"
 QUIZ_ACTION = "quiz"
 FIND_MP_ACTION = "find_mp"
-
+FAQ_ACTION = "faq"
 emoji_code_points = {
     1: '1️⃣',  
     2: '2️⃣',
@@ -62,6 +62,9 @@ def inbound(request):
                 return send_presidential_candidates(phone_number=user_number)
             elif message_body == "4":
                 return send_mp_start(phone_number=user_number)
+            elif message_body == '5':
+                add_current_action_to_cache_DB(phoneNumber=user_number,value=FAQ_ACTION,expire_at=5)
+                return faq_handler(request=request)
         elif current_action == QUIZ_ACTION:
             if message_body  in ['1','true','false']:
                 return trivia_game(request=request)
@@ -71,6 +74,16 @@ def inbound(request):
                 invalid_reply()
         elif current_action == FIND_MP_ACTION:
             return send_mp_end(phone_number=user_number,constituency_name=message_body)
+        elif current_action == FAQ_ACTION:
+             if message_body  in ['1']:
+                    return faq_handler(request=request)
+             elif message_body== "0":
+                        return send_main_menu(phone_number=user_number)
+             else:
+                 _msg = """
+                        Invalid response. You currently reading fqa. To terminate game reply with *0*
+                        """
+                 return send_response_messages(msg=_msg)
 
     _reply = ResponseMessages.objects.get(pk=1)
     reply = f"*Hey Buddy!* 😀 Welcome !! {user_number} to ballot buddies.\n\n {_reply.en_text}"
