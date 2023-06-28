@@ -1,9 +1,9 @@
 from django.contrib import admin
-
+from unfold.admin import ModelAdmin
 from .models import MainMenu
 from import_export.admin import ImportExportMixin
 
-class mainMenu(ImportExportMixin,admin.ModelAdmin):
+class mainMenu(ImportExportMixin,ModelAdmin):
     list_display =(
         "feature_en",
         "feature_sh",

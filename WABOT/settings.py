@@ -1,7 +1,7 @@
 from pathlib import Path
 import environ
 import os
-
+from django.templatetags.static import static
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,9 +20,12 @@ DEBUG = env('DEBUG')
 ALLOWED_HOSTS = ['127.0.0.1','c225-196-41-88-241.ngrok-free.app','ballotbuddies.net']
 CSRF_TRUSTED_ORIGINS = ["https://ballotbuddies.net","https://www.ballotbuddies.net","https://www.0093-149-34-244-173.ngrok-free.app"]
 
-# Application definition
 
 INSTALLED_APPS = [
+    "unfold",  # before django.contrib.admin
+    "unfold.contrib.filters",  # optional, if special filters are needed
+    "unfold.contrib.forms",  # optional, if special form elements are needed
+    "unfold.contrib.import_export",  # optional, if django-import-export package is used
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -158,3 +161,70 @@ else:
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+from django.templatetags.static import static
+from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
+
+UNFOLD = {
+    "SITE_TITLE": "Ballot Buddies Admin Panel",
+    "SITE_HEADER": "Ballot Buddies Admin Panel",
+    "SITE_URL": "/",
+    "SITE_ICON": lambda request: static("images/favicon-16x16.png"),
+    "SITE_SYMBOL": "speed",  # symbol from icon set
+    #"DASHBOARD_CALLBACK": "wa_user.dashboard_callback",
+    "LOGIN": {
+        "image": lambda r: static("images/login.jpg"),
+    },
+    "SIDEBAR": {
+        "show_search": True,  # Search in applications and models names
+        "show_all_applications": True,  # Dropdown with all applications and models
+        
+    },
+    "STYLES": [
+        lambda request: static("css/style.css"),
+    ],
+    "SCRIPTS": [
+        lambda request: static("js/script.js"),
+    ],
+    "COLORS": {
+       "primary": {
+"50": "250 245 255",
+"100": "243 232 255",
+"200": "233 213 255",
+"300": "216 180 254",
+"400": "192 132 252",
+"500": "177 221 171",
+"600": "147 51 234",
+"700": "126 34 206",
+"800": "107 33 168",
+"900": "88 28 135"
+}
+    },
+    "EXTENSIONS": {
+        "modeltranslation": {
+            "flags": {
+                "en": "🇬🇧",
+                "fr": "🇫🇷",
+                "nl": "🇧🇪",
+            },
+        },
+    },
+}
+
+
+def dashboard_callback(request, context):
+    """
+    Callback to prepare custom variables for index template which is used as dashboard
+    template. It can be overridden in application by creating custom admin/index.html.
+    """
+    context.update(
+        {
+            "sample": "example",  # this will be injected into templates/admin/index.html
+        }
+    )
+    return context
+
+
+def badge_callback(request):
+    return 3

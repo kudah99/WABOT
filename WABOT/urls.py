@@ -10,7 +10,7 @@ admin.site.site_title  =  "Ballot Buddies Admin Panel"
 admin.site.index_title  =  "Ballot Buddies  APP"
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path("admin/", admin.site.urls),
     path('whatsapp/', include('hook.urls')),
     path(r'', views.HomePageView.as_view(), name='home'), # Notice the URL has been named
     path(r'', include('home.urls')),

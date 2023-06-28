@@ -1,11 +1,12 @@
 from django.contrib import admin
-
+from unfold.admin import ModelAdmin
+from import_export.admin import ImportExportMixin
 # Register your models here.
 from django.contrib import admin
 from .models import MemberOfParliamentCandidates,PresidentialCandidates
 
 
-class MemberOfParliamentCandidatesAdmin(admin.ModelAdmin):
+class MemberOfParliamentCandidatesAdmin(ImportExportMixin, ModelAdmin):
     list_display= (
         "id",
         "name",
@@ -15,7 +16,7 @@ class MemberOfParliamentCandidatesAdmin(admin.ModelAdmin):
     )
 
 
-class PresidentialCandidatesAdmin(admin.ModelAdmin):
+class PresidentialCandidatesAdmin(ImportExportMixin, ModelAdmin):
     list_display= (
         "id",
         "name",
