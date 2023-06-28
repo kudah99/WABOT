@@ -21,7 +21,7 @@ def trivia_game(request):
     if not questions:
         all_questions = list(Trivia.objects.all())
         random.shuffle(all_questions)
-        questions = all_questions[:15]
+        questions = all_questions[:10]
         cache.set(f'{user_phone}:random_questions', questions, 600)
 
     if questions:
@@ -35,12 +35,12 @@ def trivia_game(request):
             cache.set(f'{user_phone}:score', last_score+1, 600)
             questions.pop(0)
             cache.set(f'{user_phone}:random_questions', questions, 600)
-        elif last_score != incoming_msg:
+        elif last_question_answer != incoming_msg:
             set_cache(user_phone, question.answer)
             questions.pop(0)
             cache.set(f'{user_phone}:random_questions', questions, 600)
     else:
-        score_percentage = (last_score / 15) * 100
+        score_percentage = (last_score / 10) * 100
         msg.body(f"Quiz completed!! Your score is {score_percentage}%\n\n Reply with *0* to return to the main menu.")
 
     return HttpResponse(str(response))
