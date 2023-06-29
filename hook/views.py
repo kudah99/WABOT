@@ -11,7 +11,7 @@ from elections_candidates.models import PresidentialCandidates, MemberOfParliame
 from prettytable import PrettyTable as pt
 from twilio.twiml.messaging_response import MessagingResponse
 from wa_user.models import WAUsers
-from quiz.views import trivia_game
+from quiz.views import trivia_game,delete_cached_data
 
 
 EXPIRATION_TIME = 5 # In minutes
@@ -117,7 +117,7 @@ def send_response_messages(msg):
 
 
 def send_main_menu(phone_number):
-    options = MainMenu.objects.all()
+    options = MainMenu.objects.all().order_by('id') 
     username = cache.get(phone_number).user_name
     message = f"Hi, *{username}*, welcome again to Ballot Buddies:\n\n"
     
