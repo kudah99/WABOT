@@ -161,22 +161,32 @@ def send_presidential_candidates(phone_number):
 
 def send_mp_start(phone_number):
     username = cache.get(phone_number).user_name
-    message = f"Hi, *{username}*, tell us your constituency\ne.g *Chikomba central*"
+    message = f"Hi, *{username}*, tell us your constituency\n\ne.g *Chikomba central*"
     add_current_action_to_cache_DB(phoneNumber=phone_number, value=FIND_MP_ACTION, expire_at=1)
     return send_response_messages(msg=message)
 
 def send_mp_end(constituency_name, phone_number):
     username = cache.get(phone_number).user_name
     member_of_parliaments = MemberOfParliamentCandidates.objects.filter(constituency__name__icontains=constituency_name)
+    
+    if not member_of_parliaments:
+        message = f"Hi, *{username}*, 😟 we couldn't find any Member of Parliament candidates for the {constituency_name} constituency. There could be a few reasons for this:\n\n"
+        message += "🤔You may have entered an incorrect constituency name.\n"
+        message += "🤔The constituency you searched for might not have any registered candidates yet.\n"
+        message += "🤔We have not updated the information for this constituency in our database.\n"
+        add_current_action_to_cache_DB(phoneNumber=phone_number, value=MAIN_MENU_ACTION, expire_at=1)
+        return send_response_messages(msg=message)
+    
     message = f"Hi, *{username}*, here are the MP candidates and their respective political parties participating in the 2023 harmonized elections. In *{constituency_name} constituency*:\n\n"
-
-    header=["*CANDIDATE*","*POLITICAL PARTY*"]
+    
+    header=["*CANDIDATE*","*PARTY*"]
     table=[]
     for i in member_of_parliaments:
-        table.append([f'{i.name}',f'{i.political_party}'])
-  
+        table.append([f'*{i.name}*',f'*{i.political_party}*'])
+    message += tabulate(table, header, tablefmt="fancy_grid")
     add_current_action_to_cache_DB(phoneNumber=phone_number, value=MAIN_MENU_ACTION, expire_at=1)
     return send_response_messages(msg=message)
+
 
 def add_current_action_to_cache_DB(phoneNumber, value, expire_at: int):
     cache.set(f"{CURRENT_ACTION_PREFIX}{phoneNumber}", value, timeout=expire_at * 60)
