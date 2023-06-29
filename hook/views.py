@@ -136,13 +136,18 @@ def send_main_menu(phone_number):
 def send_political_parties(phone_number):
     options = Political_Parties.objects.all()
     username = cache.get(phone_number).user_name
-    message = f"Hi, *{username}*, Here are the list of parties participating in 2023 harmonised elections.\n\n"
+    party_count = len(options)
     
-    for i in options:
-        emoji_num = emoji_code_points.get(i.pk)
-  
-        emoji_char = emoji_num  # handle case where emoji not found
-        message += f'*{i.name}*\n'
+    message = f"Hi, *{username}*, here is a list of political parties participating in the 2023 harmonized elections. Total parties: {party_count}\n\n"
+    header = ["POLITICAL PARTY"]
+    table = []
+    
+    for party in options:
+        party_name = f"⭐  *{party.name}* ⭐"  # Adding star emojis to party name
+        table.append([party_name])
+    
+    message += tabulate(table, header, tablefmt="heavy_outline",)
+    
     add_current_action_to_cache_DB(phoneNumber=phone_number, value=MAIN_MENU_ACTION, expire_at=1)
     return send_response_messages(msg=message)
 
