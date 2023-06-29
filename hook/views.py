@@ -122,7 +122,7 @@ def send_response_messages(msg):
 def send_main_menu(phone_number):
     options = MainMenu.objects.all().order_by('id') 
     username = cache.get(phone_number).user_name
-    message = f"Hi, *{username}*, welcome again to Ballot Buddies:\n\n"
+    message = f"👋 Hi, *{username}*, welcome back to Ballot Buddies!\n\n"
     
     for i in options:
         emoji_num = emoji_code_points.get(i.pk)
@@ -209,6 +209,6 @@ def send_credits(phone_number):
     message += "🌐 https://ballotbuddies.net/\n\n"
     message += "If you have any suggestions or questions, we would love to hear from you!\n"
     message += "You can reach us via email at hello@ballotbuddies.net 📧\n\n"
-    message += "Reply with *0* to return to the main menu.\n\n"
+    message += "_Reply with *0* to return to home._\n\n"
     
     return send_response_messages(msg=message)
