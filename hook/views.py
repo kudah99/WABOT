@@ -38,6 +38,7 @@ emoji_code_points = {
 @csrf_exempt
 def inbound(request):
     number = request.POST.get('From')
+    profile_name = request.POST.get('ProfileName')
     message_body = request.POST.get('Body').strip().lower()
     user_number = number[9:]
 
@@ -54,8 +55,10 @@ def inbound(request):
             return send_main_menu(phone_number=user_number)
         elif current_action == MAIN_MENU_ACTION:
             if message_body == "1":
+                getUser = cache.get(user_number)
+                username = getUser.user_name
                 add_current_action_to_cache_DB(phoneNumber=user_number,value="quiz",expire_at=15)
-                _msg = f"🎉 Let's play a *True* or *False* quiz game to test your knowledge about Zimbabwe elections! Are you in? 🤔\n\nReply with *1* to start the quiz game now or *0* to return to home."
+                _msg = f"Hi {username}, Let's play a quiz game to test your knowledge about Zimbabwe elections! Are you in?"
                 return send_response_messages(msg=_msg)
             elif message_body == "2":
                 return send_political_parties(phone_number=user_number)
@@ -69,9 +72,9 @@ def inbound(request):
             elif message_body == '6':
                 return send_credits(phone_number=user_number)
         elif current_action == QUIZ_ACTION:
-            if message_body  in ['1','true','false']:
+            if message_body  in ['start','true','false']:
                 return trivia_game(request=request)
-            elif message_body == "0":
+            elif message_body == "later":
                 delete_cached_data(user_phone=number)
                 return send_main_menu(phone_number=user_number)
             else:
@@ -91,7 +94,7 @@ def inbound(request):
                  return send_response_messages(msg=_msg)
 
     _reply = ResponseMessages.objects.get(pk=1)
-    reply = f"🎉 Hey Buddy! 🥳 Welcome\n █║ *{user_number}* ║▌\nto Ballot Buddies!\n\n {_reply.en_text}"
+    reply = f"🎉 Hey Buddy! 🥳 Welcome\n █║ *{profile_name}* ║▌\nto Ballot Buddies!\n\n {_reply.en_text}"
     try:
         qnumber = WAUsers.my_objects.get(phone_number=user_number)
         add_user_to_cache_DB(phonenumber=user_number, user=qnumber)

@@ -17,7 +17,7 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = ['127.0.0.1','eb84-102-128-79-3.ngrok-free.app','ballotbuddies.net']
+ALLOWED_HOSTS = ['127.0.0.1','9843-196-41-88-17.ngrok-free.app','ballotbuddies.net']
 CSRF_TRUSTED_ORIGINS = ["https://ballotbuddies.net","https://www.ballotbuddies.net","https://www.0093-149-34-244-173.ngrok-free.app"]
 
 
