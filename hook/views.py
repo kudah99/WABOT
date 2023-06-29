@@ -199,13 +199,16 @@ def invalid_reply():
 
 #send credits
 def send_credits(phone_number):
-    getUser = cache.get(phone_number)
-    username = getUser.user_name
-    _msg =f"""
-    Hi {username}\n,
-    Meet the Ballot Buddies team @
-    https://ballotbuddies.net/
-    You  also welcome you to join us or if you have an suggestion you can reach us via our email hello@ballotbuddies.net
-    \n _reply with *0* to return main menu_
-    """
-    return send_response_messages(msg=_msg)
+    user = cache.get(phone_number)
+    username = user.user_name
+    
+    message = f"👋 Hi {username},\n\n"
+    message += "Thank you for using Ballot Buddies!\n\n"
+    message += "We appreciate your support and value your feedback.\n\n"
+    message += "Please take a moment to visit our website to learn more about the Ballot Buddies team:\n"
+    message += "🌐 https://ballotbuddies.net/\n\n"
+    message += "If you have any suggestions or questions, we would love to hear from you!\n"
+    message += "You can reach us via email at hello@ballotbuddies.net 📧\n\n"
+    message += "Reply with *0* to return to the main menu.\n\n"
+    
+    return send_response_messages(msg=message)
