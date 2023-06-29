@@ -26,7 +26,7 @@ def trivia_game(request):
     last_question_answer = cache.get(f'{user_phone}:expected_answer')
     last_score = cache.get(f'{user_phone}:score', 0)
 
-    if not questions:
+    if not questions and last_score == 0:
         all_questions = list(Trivia.objects.all())
         random.shuffle(all_questions)
         questions = all_questions[:10]
@@ -36,25 +36,25 @@ def trivia_game(request):
         question = questions[0]
         if not last_question_answer:
             set_cache(user_phone, question.answer)
-            send_msg(msg=f"Question: {space} {question.question}.{space}{terminate}",FROM=to_number,TO=from_number)
+            send_msg(msg=f"*Trivia*:{space} {question.question}.{space}\n\n{terminate}",FROM=to_number,TO=from_number)
         elif last_question_answer == incoming_msg:
             set_cache(user_phone, question.answer)
             send_msg(msg="Correct answer ✔️",FROM=to_number,TO=from_number)
-            send_msg(msg=f"Question: {space} {question.question}.{space}{terminate}",FROM=to_number,TO=from_number)
+            send_msg(msg=f"*Trivia*:{space} {question.question}.{space}\n\n{terminate}",FROM=to_number,TO=from_number)
             cache.set(f'{user_phone}:score', last_score + 1, 600)
             questions.pop(0)
             cache.set(f'{user_phone}:random_questions', questions, 600)
         else:
-            # Incorrect answer
+            # Incorrect answer  
             set_cache(user_phone, question.answer)
             questions.pop(0)
             cache.set(f'{user_phone}:random_questions', questions, 600)
             send_msg(msg=f"Incorrect answer. The correct answer is *{last_question_answer}*",FROM=to_number,TO=from_number)
-            send_msg(msg=f"Question: {space} {question.question}.{space}{terminate}",FROM=to_number,TO=from_number)
+            send_msg(msg=f"*Trivia*:{space} {question.question}.{space}\n\n{terminate}",FROM=to_number,TO=from_number)
     else:
         score_percentage = (last_score / 10) * 100
         delete_cached_data(user_phone=user_phone)
-        msg.body(f"Quiz completed!! Your score is {score_percentage}%\n\n Reply with *0* to return to the main menu.")
+        msg.body(f"Quiz completed!! Your score is *{score_percentage}%*. You can retake the game and receive new challenges.\n\n Reply with *0* to return to the main menu.")
 
     return HttpResponse(str(response))
 

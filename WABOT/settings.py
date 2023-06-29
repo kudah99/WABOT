@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'faq',
     'elections_candidates'
 ]
+
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 SESSION_COOKIE_SECURE = True
