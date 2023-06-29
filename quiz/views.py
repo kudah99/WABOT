@@ -36,11 +36,11 @@ def trivia_game(request):
         question = questions[0]
         if not last_question_answer:
             set_cache(user_phone, question.answer)
-            send_msg(msg=f"*Trivia*:{space} {question.question}.{space}\n\n{terminate}",FROM=to_number,TO=from_number)
+            send_msg(msg=f"Question:{space} {question.question}.",FROM=to_number,TO=from_number)
         elif last_question_answer == incoming_msg:
             set_cache(user_phone, question.answer)
             send_msg(msg="Correct answer ✔️",FROM=to_number,TO=from_number)
-            send_msg(msg=f"*Trivia*:{space} {question.question}.{space}\n\n{terminate}",FROM=to_number,TO=from_number)
+            send_msg(msg=f"Question:{space} {question.question}.",FROM=to_number,TO=from_number)
             cache.set(f'{user_phone}:score', last_score + 1, 600)
             questions.pop(0)
             cache.set(f'{user_phone}:random_questions', questions, 600)
@@ -50,7 +50,7 @@ def trivia_game(request):
             questions.pop(0)
             cache.set(f'{user_phone}:random_questions', questions, 600)
             send_msg(msg=f"Incorrect answer. The correct answer is *{last_question_answer}*",FROM=to_number,TO=from_number)
-            send_msg(msg=f"*Trivia*:{space} {question.question}.{space}\n\n{terminate}",FROM=to_number,TO=from_number)
+            send_msg(msg=f"Question:{space} {question.question}.",FROM=to_number,TO=from_number)
     else:
         score_percentage = (last_score / 10) * 100
         delete_cached_data(user_phone=user_phone)

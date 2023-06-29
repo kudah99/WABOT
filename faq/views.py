@@ -23,6 +23,7 @@ def get_next_fqa(usernumber):
     else:
         cache.delete(usernumber)
         return None
+    
 
 def faq_handler(request):
     if request.method == 'POST':
