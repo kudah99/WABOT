@@ -11,7 +11,7 @@ from django.core.cache import cache
 def get_next_fqa(usernumber):
     last_fqa = cache.get(usernumber)
     if last_fqa:
-        last_fqa = int(last_fqa.decode('utf-8'))
+        last_fqa = int(last_fqa)
     else:
         last_fqa = -1
     fqa_list = list(FAQ.objects.all().values_list('id', flat=True))

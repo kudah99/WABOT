@@ -55,7 +55,7 @@ def inbound(request):
         elif current_action == MAIN_MENU_ACTION:
             if message_body == "1":
                 add_current_action_to_cache_DB(phoneNumber=user_number,value="quiz",expire_at=15)
-                _msg = f"Do you wish play quiz game to test you knowledge about Zimbabwe elections.\n\n Reply with *1* to start quiz game now or *0* to return to the main menu."
+                _msg = f"🎉 Let's play a *True* or *False* quiz game to test your knowledge about Zimbabwe elections! Are you in? 🤔\n\nReply with *1* to start the quiz game now or *0* to return to home."
                 return send_response_messages(msg=_msg)
             elif message_body == "2":
                 return send_political_parties(phone_number=user_number)
@@ -91,7 +91,7 @@ def inbound(request):
                  return send_response_messages(msg=_msg)
 
     _reply = ResponseMessages.objects.get(pk=1)
-    reply = f"*Hey Buddy!* 😀 Welcome !! {user_number} to ballot buddies.\n\n {_reply.en_text}"
+    reply = f"🎉 Hey Buddy! 🥳 Welcome\n █║ *{user_number}* ║▌\nto Ballot Buddies!\n\n {_reply.en_text}"
     try:
         qnumber = WAUsers.my_objects.get(phone_number=user_number)
         add_user_to_cache_DB(phonenumber=user_number, user=qnumber)
@@ -122,7 +122,7 @@ def send_response_messages(msg):
 def send_main_menu(phone_number):
     options = MainMenu.objects.all().order_by('id') 
     username = cache.get(phone_number).user_name
-    message = f"👋 Hi, *{username}*, welcome back to Ballot Buddies!\n\n"
+    message = f"👋 Hi, ▌│ *{username}* │▌\nwelcome back to Ballot Buddies!\n\n"
     
     for i in options:
         emoji_num = emoji_code_points.get(i.pk)
@@ -154,7 +154,7 @@ def send_political_parties(phone_number):
 def send_presidential_candidates(phone_number):
     options = PresidentialCandidates.objects.all()
     username = cache.get(phone_number).user_name
-    message = f"Hi 😊, *{username}*, here are the presidential candidates and their respective political parties participating in the 2023 harmonized elections:\n\n"
+    message = f"Hi 😊,▌ *{username}* ▌\nHere are the presidential candidates and their respective political parties participating in the 2023 harmonized elections:\n\n"
 
     header=["*CANDIDATE*","*PARTY*"]
     table=[]
