@@ -12,6 +12,7 @@ from prettytable import PrettyTable as pt
 from twilio.twiml.messaging_response import MessagingResponse
 from wa_user.models import WAUsers
 from quiz.views import trivia_game,delete_cached_data
+from tabulate import tabulate
 
 
 EXPIRATION_TIME = 5 # In minutes
@@ -71,8 +72,10 @@ def inbound(request):
             if message_body  in ['1','true','false']:
                 return trivia_game(request=request)
             elif message_body == "0":
+                delete_cached_data(user_phone=number)
                 return send_main_menu(phone_number=user_number)
             else:
+                delete_cached_data(user_phone=number)
                 invalid_reply()
         elif current_action == FIND_MP_ACTION:
             return send_mp_end(phone_number=user_number,constituency_name=message_body)
@@ -146,15 +149,13 @@ def send_political_parties(phone_number):
 def send_presidential_candidates(phone_number):
     options = PresidentialCandidates.objects.all()
     username = cache.get(phone_number).user_name
-    message = f"Hi, *{username}*, here are the presidential candidates and their respective political parties participating in the 2023 harmonized elections:\n\n"
-    tb1 = pt()
-    tb1.max_width = 10
-    tb1.field_names=["*CANDIDATE*","*POLITICAL PARTY*"]
-    for i in options:
-        tb1.add_row([f"{i.name}",f"{i.political_party}"])
+    message = f"Hi 😊, *{username}*, here are the presidential candidates and their respective political parties participating in the 2023 harmonized elections:\n\n"
 
-    tb1.align["PARTY"] = "l"
-    message += tb1.get_string(title = "Presidential Candidates")
+    header=["*CANDIDATE*","*PARTY*"]
+    table=[]
+    for i in options:
+        table.append([f'*{i.name}*',f'*{i.political_party}*'])
+    message += tabulate(table, header, tablefmt="fancy_grid")
     add_current_action_to_cache_DB(phoneNumber=phone_number, value=MAIN_MENU_ACTION, expire_at=1)
     return send_response_messages(msg=message)
 
@@ -168,12 +169,12 @@ def send_mp_end(constituency_name, phone_number):
     username = cache.get(phone_number).user_name
     member_of_parliaments = MemberOfParliamentCandidates.objects.filter(constituency__name__icontains=constituency_name)
     message = f"Hi, *{username}*, here are the MP candidates and their respective political parties participating in the 2023 harmonized elections. In *{constituency_name} constituency*:\n\n"
-    tb1 = pt()
-    tb1.max_width = 10
-    tb1.field_names=["*CANDIDATE*","*POLITICAL PARTY*"]
+
+    header=["*CANDIDATE*","*POLITICAL PARTY*"]
+    table=[]
     for i in member_of_parliaments:
-        tb1.add_row([f"{i.name}",f"{i.political_party}"])
-    message += tb1.get_string(title = "MP Candidates")
+        table.append([f'{i.name}',f'{i.political_party}'])
+  
     add_current_action_to_cache_DB(phoneNumber=phone_number, value=MAIN_MENU_ACTION, expire_at=1)
     return send_response_messages(msg=message)
 
